@@ -39,3 +39,18 @@ heatmap(
   margins = c(9, 9),
   main = "Correlations between electrical measurements"
 )  
+# Find the highest power reading and show when it happened.
+power <- electricity_clean$Global_active_power
+peak_row <- which.max(power)
+
+print(electricity_clean[
+  peak_row, c("Date", "Time", "Global_active_power")
+])
+
+# Flag high readings using the spread of the middle half of the data.
+upper_limit <- quantile(power, 0.75) + 1.5 * IQR(power)
+high_count <- sum(power > upper_limit)
+
+cat(sprintf("High-reading cutoff: %.3f kW\n", upper_limit))
+cat(sprintf("Readings above the cutoff: %d (%.2f%%)\n",
+            high_count, 100 * high_count / length(power)))   
